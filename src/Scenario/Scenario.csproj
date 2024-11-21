@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyName>DrifterApps.Seeds.Scenario</AssemblyName>
+        <RootNamespace>DrifterApps.Seeds.Scenario</RootNamespace>
+        <Product>DrifterApps.Seeds.Scenario</Product>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="ScenarioRunner.And.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.Given.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.Then.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.When.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="xunit" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="FluentAssertions\" />
+    </ItemGroup>
+
+</Project>
