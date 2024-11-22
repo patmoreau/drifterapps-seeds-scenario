@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PROJECT_NAME: DrifterApps Seeds Scenario
+  PROJECT_NAME: DrifterApps Seeds FluentScenario
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -131,7 +131,7 @@ jobs:
           label: Tests
           status: '${{ steps.test-results.outputs.passed }} passed, ${{ steps.test-results.outputs.failed }} failed, ${{ steps.test-results.outputs.skipped }} skipped: ${{ steps.test-results.outputs.conclusion }}'
           color: ${{ env.BADGE_COLOR }}
-          path: seeds-scenario-tests-badge.svg
+          path: seeds-fluentscenario-tests-badge.svg
 
       - name: Upload badge to artifacts
         if: always()
@@ -139,7 +139,7 @@ jobs:
         with:
           name: Test Results Badge
           path: |
-            seeds-scenario-tests-badge.svg
+            seeds-fluentscenario-tests-badge.svg
 
       - name: Upload badge to Gist
         if: >
@@ -149,7 +149,7 @@ jobs:
         with:
           token: ${{ secrets.GIST_TOKEN }}
           gist_id: 51a2fc9fd8b7ed500ed3b6aabe0fc2d6
-          file_path: seeds-scenario-tests-badge.svg
+          file_path: seeds-fluentscenario-tests-badge.svg
           file_type: text
 
   tagging:
