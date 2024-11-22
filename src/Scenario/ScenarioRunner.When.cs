@@ -1,12 +1,10 @@
+using System.Runtime.CompilerServices;
+
 namespace DrifterApps.Seeds.Scenario;
 
 internal sealed partial class ScenarioRunner
 {
-    /// <summary>
-    ///     Executes a step in the scenario.
-    /// </summary>
-    /// <param name="step">The step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner When(Action<IStepRunner> step)
     {
         ArgumentNullException.ThrowIfNull(step);
@@ -18,132 +16,67 @@ internal sealed partial class ScenarioRunner
         return this;
     }
 
-    /// <summary>
-    ///     Executes a step in the scenario with a description.
-    /// </summary>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
-    public IScenarioRunner When(string description, Action step)
-    {
-        AddStep(nameof(When), description, async _ =>
-        {
-            await Task.Run(step).ConfigureAwait(false);
-            return null;
-        });
+    /// <inheritdoc/>
+    public IScenarioRunner When(string description, Action step) =>
+        AddStep(StepDefinition.Create(nameof(When), description, step));
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner When(string description, Func<Task> step) =>
+        AddStep(StepDefinition.Create(nameof(When), description, step));
 
-    /// <summary>
-    ///     Executes an asynchronous step in the scenario with a description.
-    /// </summary>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
-    public IScenarioRunner When(string description, Func<Task> step)
-    {
-        AddStep(nameof(When), description, async _ =>
-        {
-            await step().ConfigureAwait(false);
-            return null;
-        });
+    /// <inheritdoc/>
+    public IScenarioRunner When<T>(string description, Action<Ensure<T>> step) =>
+        AddStep(StepDefinition.Create(nameof(When), description, step));
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner When<T>(string description, Func<T> step) =>
+        AddStep(StepDefinition.Create(nameof(When), description, step));
 
-    /// <summary>
-    ///     Executes a step in the scenario with a description and input parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the input parameter.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
-    public IScenarioRunner When<T>(string description, Action<Ensure<T>> step)
-    {
-        AddStep(nameof(When), description, async input =>
-        {
-            await Task.Run(() => step(Ensure<T>.From(input))).ConfigureAwait(false);
-            return null;
-        });
+    /// <inheritdoc/>
+    public IScenarioRunner When<T>(string description, Func<Task<T>> step) =>
+        AddStep(StepDefinition.Create(nameof(When), description, step));
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner When<T, T2>(string description, Func<Ensure<T>, T2> step) =>
+        AddStep(StepDefinition.Create(nameof(When), description, step));
 
-    /// <summary>
-    ///     Executes a step in the scenario with a description and returns a result.
-    /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
-    public IScenarioRunner When<T>(string description, Func<T> step)
-    {
-        AddStep(nameof(When), description, async _ => await Task.Run(step).ConfigureAwait(false));
+    /// <inheritdoc/>
+    public IScenarioRunner When<T, T2>(string description, Func<Ensure<T>, Task<T2>> step) =>
+        AddStep(StepDefinition.Create(nameof(When), description, step));
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner When<T>(string description, Func<Ensure<T>, Task> step) =>
+        AddStep(StepDefinition.Create(nameof(When), description, step));
 
-    /// <summary>
-    ///     Executes an asynchronous step in the scenario with a description and returns a result.
-    /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
-    public IScenarioRunner When<T>(string description, Func<Task<T>> step)
-    {
-        AddStep(nameof(When), description, async _ => await step().ConfigureAwait(false));
+    /// <inheritdoc/>
+    public IScenarioRunner When(Action step, [CallerMemberName] string description = "") =>
+        When(CamelToSentence(description), step);
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner When(Func<Task> step, [CallerMemberName] string description = "") =>
+        When(CamelToSentence(description), step);
 
-    /// <summary>
-    ///     Executes a step in the scenario with a description and input parameter, and returns a result.
-    /// </summary>
-    /// <typeparam name="T">The type of the input parameter.</typeparam>
-    /// <typeparam name="T2">The type of the result.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
-    public IScenarioRunner When<T, T2>(string description, Func<Ensure<T>, T2> step)
-    {
-        AddStep(nameof(When), description,
-            async input => await Task.Run(() => step(Ensure<T>.From(input))).ConfigureAwait(false));
+    /// <inheritdoc/>
+    public IScenarioRunner When<T>(Action<Ensure<T>> step, [CallerMemberName] string description = "") =>
+        When(CamelToSentence(description), step);
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner When<T>(Func<T> step, [CallerMemberName] string description = "") =>
+        When(CamelToSentence(description), step);
 
-    /// <summary>
-    ///     Executes an asynchronous step in the scenario with a description and input parameter, and returns a result.
-    /// </summary>
-    /// <typeparam name="T">The type of the input parameter.</typeparam>
-    /// <typeparam name="T2">The type of the result.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
-    public IScenarioRunner When<T, T2>(string description, Func<Ensure<T>, Task<T2>> step)
-    {
-        AddStep(nameof(When), description, async input => await step(Ensure<T>.From(input)).ConfigureAwait(false));
+    /// <inheritdoc/>
+    public IScenarioRunner When<T>(Func<Task<T>> step, [CallerMemberName] string description = "") =>
+        When(CamelToSentence(description), step);
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner When<T>(Func<Ensure<T>, Task> step, [CallerMemberName] string description = "") =>
+        When(CamelToSentence(description), step);
 
-    /// <summary>
-    ///     Executes an asynchronous step in the scenario with a description and input parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the input parameter.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous step to execute.</param>
-    /// <returns>The scenario runner instance.</returns>
-    public IScenarioRunner When<T>(string description, Func<Ensure<T>, Task> step)
-    {
-        AddStep(nameof(When), description, async input =>
-        {
-            await step(Ensure<T>.From(input)).ConfigureAwait(false);
-            return null;
-        });
+    /// <inheritdoc/>
+    public IScenarioRunner When<T, T2>(Func<Ensure<T>, T2> step, [CallerMemberName] string description = "") =>
+        When(CamelToSentence(description), step);
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner When<T, T2>(Func<Ensure<T>, Task<T2>> step, [CallerMemberName] string description = "") =>
+        When(CamelToSentence(description), step);
 }

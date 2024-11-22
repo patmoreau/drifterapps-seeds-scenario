@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using DrifterApps.Seeds.Scenario.Attributes;
-using Xunit.Abstractions;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace DrifterApps.Seeds.Scenario;
 
@@ -11,106 +11,100 @@ namespace DrifterApps.Seeds.Scenario;
 internal sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
 {
     private readonly Dictionary<string, object> _context = [];
-    private readonly List<(string Command, string Description, Func<object?, Task<object?>> Step)> _steps = [];
-    private readonly ITestOutputHelper _testOutputHelper;
+    private readonly List<StepDefinition> _steps = [];
+    private readonly IScenarioOutput _scenarioOutput;
     private string _stepCommand = string.Empty;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="ScenarioRunner" /> class.
     /// </summary>
     /// <param name="description">The description of the scenario.</param>
-    /// <param name="testOutputHelper">The test output helper.</param>
+    /// <param name="scenarioOutput">The test output helper.</param>
     /// <exception cref="ArgumentNullException">Thrown when description or testOutputHelper is null.</exception>
-    private ScenarioRunner(string description, ITestOutputHelper testOutputHelper)
+    private ScenarioRunner(string description, IScenarioOutput scenarioOutput)
+    {
+        ValidateDescription(description);
+
+        ArgumentNullException.ThrowIfNull(scenarioOutput);
+
+        _steps.Add(StepDefinition.Create("Scenario", $"SCENARIO for {description}", () => { }));
+
+        _scenarioOutput = scenarioOutput;
+    }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ScenarioRunner" /> class.
+    /// </summary>
+    /// <param name="description">The description of the scenario.</param>
+    /// <param name="input">Input value to start the scenario</param>
+    /// <param name="scenarioOutput">The test output helper.</param>
+    /// <exception cref="ArgumentNullException">Thrown when description or testOutputHelper is null.</exception>
+    private ScenarioRunner(string description, object? input, IScenarioOutput scenarioOutput)
+    {
+        ValidateDescription(description);
+
+        ArgumentNullException.ThrowIfNull(scenarioOutput);
+
+        _steps.Add(StepDefinition.Create("Scenario", $"SCENARIO for {description}", () => input));
+
+        _scenarioOutput = scenarioOutput;
+    }
+
+    private static void ValidateDescription(string description)
     {
         if (string.IsNullOrWhiteSpace(description))
         {
             throw new ArgumentNullException(nameof(description),
                 "Please explain your intent by documenting your scenario.");
         }
-
-        ArgumentNullException.ThrowIfNull(testOutputHelper);
-
-        _steps.Add((Command: "Scenario", $"SCENARIO for {description}", _ => Task.FromResult<object?>(null)));
-
-        _testOutputHelper = testOutputHelper;
-    }
-
-    /// <summary>
-    ///     Sets context data for the scenario.
-    /// </summary>
-    /// <param name="contextKey">The key for the context data.</param>
-    /// <param name="data">The data to be set.</param>
-    public void SetContextData(string contextKey, object data)
-    {
-        _context.Remove(contextKey);
-        _context.Add(contextKey, data);
-    }
-
-    /// <summary>
-    ///     Gets context data for the scenario.
-    /// </summary>
-    /// <typeparam name="T">The type of the context data.</typeparam>
-    /// <param name="contextKey">The key for the context data.</param>
-    /// <returns>The context data.</returns>
-    [AssertionMethod]
-    public T GetContextData<T>(string contextKey) =>
-        !_context.TryGetValue(contextKey, out var value)
-            ? throw new KeyNotFoundException($"The context data with key {contextKey} was not found.")
-            : (T)value;
-
-    /// <summary>
-    ///     Executes a step in the scenario.
-    /// </summary>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="stepExecution">The action to be executed.</param>
-    /// <returns>The step runner.</returns>
-    public IStepRunner Execute(string description, Action stepExecution)
-    {
-        _ = _stepCommand switch
-        {
-            nameof(Given) => Given(description, stepExecution),
-            nameof(When) => When(description, stepExecution),
-            nameof(Then) => Then(description, stepExecution),
-            _ => Given(description, stepExecution)
-        };
-
-        return this;
-    }
-
-    /// <summary>
-    ///     Executes an asynchronous step in the scenario.
-    /// </summary>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="stepExecution">The function to be executed.</param>
-    /// <returns>The step runner.</returns>
-    public IStepRunner Execute(string description, Func<Task> stepExecution)
-    {
-        _ = _stepCommand switch
-        {
-            nameof(Given) => Given(description, stepExecution),
-            nameof(When) => When(description, stepExecution),
-            nameof(Then) => Then(description, stepExecution),
-            _ => Given(description, stepExecution)
-        };
-
-        return this;
     }
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ScenarioRunner" /> class.
     /// </summary>
     /// <param name="description">The description of the scenario.</param>
-    /// <param name="testOutputHelper">The test output helper.</param>
+    /// <param name="scenarioOutput">The test output helper.</param>
     /// <returns>A new instance of <see cref="ScenarioRunner" />.</returns>
-    public static ScenarioRunner Create(string description, ITestOutputHelper testOutputHelper)
-        => new(description, testOutputHelper);
+    public static ScenarioRunner Create(string description, IScenarioOutput scenarioOutput)
+        => new(description, scenarioOutput);
 
     /// <summary>
-    ///     Plays the scenario asynchronously.
+    ///     Creates a new instance of the <see cref="ScenarioRunner" /> class.
     /// </summary>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task PlayAsync()
+    /// <param name="scenarioOutput">The test output helper.</param>
+    /// <param name="description">The description of the scenario.</param>
+    /// <returns>A new instance of <see cref="ScenarioRunner" />.</returns>
+    public static ScenarioRunner Create(IScenarioOutput scenarioOutput, [CallerMemberName] string description = "")
+        => new(CamelToSentence(description), scenarioOutput);
+
+    /// <summary>
+    ///     Creates a new instance of the <see cref="ScenarioRunner" /> class.
+    /// </summary>
+    /// <typeparam name="T">The type of the input parameter for the scenario.</typeparam>
+    /// <param name="description">The description of the scenario.</param>
+    /// <param name="input">Input value to start the scenario</param>
+    /// <param name="scenarioOutput">The test output helper.</param>
+    /// <returns>A new instance of <see cref="ScenarioRunner" />.</returns>
+    public static ScenarioRunner Create<T>(string description, T input, IScenarioOutput scenarioOutput)
+        => new(description, input, scenarioOutput);
+
+    /// <summary>
+    ///     Creates a new instance of the <see cref="ScenarioRunner" /> class.
+    /// </summary>
+    /// <typeparam name="T">The type of the input parameter for the scenario.</typeparam>
+    /// <param name="scenarioOutput">The test output helper.</param>
+    /// <param name="input">Input value to start the scenario</param>
+    /// <param name="description">The description of the scenario.</param>
+    /// <returns>A new instance of <see cref="ScenarioRunner" />.</returns>
+    public static ScenarioRunner Create<T>(T input, IScenarioOutput scenarioOutput,
+        [CallerMemberName] string description = "")
+        => new(CamelToSentence(description), input, scenarioOutput);
+
+    /// <inheritdoc/>
+    public async Task PlayAsync() => _ = await PlayAsync<object?>().ConfigureAwait(false);
+
+    /// <inheritdoc/>
+    public async Task<Ensure<T>> PlayAsync<T>()
     {
         var steps = _steps.ToList();
         _steps.Clear();
@@ -122,36 +116,47 @@ internal sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
             try
             {
                 currentResult = await step.Step(currentResult).ConfigureAwait(false);
-                _testOutputHelper.WriteLine($"\u2713 {step.Description}");
+                _scenarioOutput.WriteLine($"\u2713 {step.Description}");
             }
             catch (Exception)
             {
-                _testOutputHelper.WriteLine($"\u2717 {step.Description}");
+                _scenarioOutput.WriteLine($"\u2717 {step.Description}");
                 throw;
             }
         }
+
+        return Ensure<T>.From(currentResult);
     }
 
     /// <summary>
     ///     Adds a step to the scenario.
     /// </summary>
-    /// <param name="command">The command for the step.</param>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The function representing the step.</param>
-    /// <exception cref="ArgumentNullException">Thrown when description is null or empty.</exception>
-    private void AddStep(string command, string description, Func<object?, Task<object?>> step)
+    /// <param name="stepDefinition">The step definition.</param>
+    private ScenarioRunner AddStep(StepDefinition stepDefinition)
     {
-        if (string.IsNullOrWhiteSpace(description))
-        {
-            throw new ArgumentNullException(nameof(description),
-                "Please explain your intent by documenting your test.");
-        }
-
-        var previousCommand = _steps.LastOrDefault();
-        var textCommand = command.Equals(previousCommand.Command, StringComparison.OrdinalIgnoreCase)
+        var previousStep = _steps.LastOrDefault();
+        var textCommand = stepDefinition.Command.Equals(previousStep?.Command, StringComparison.OrdinalIgnoreCase)
             ? "and"
-            : command.ToUpperInvariant();
-        var text = $"{textCommand} {description}";
-        _steps.Add((command, $"{text}", step));
+            : stepDefinition.Command.ToUpperInvariant();
+        var text = $"{textCommand} {stepDefinition.Description}";
+        _steps.Add(stepDefinition with
+        {
+            Description = text
+        });
+        return this;
     }
+
+    /// <summary>
+    /// Converts a camel case string to a sentence.
+    /// </summary>
+    /// <param name="description">The camel case string to convert.</param>
+    /// <returns>The converted sentence.</returns>
+    private static string CamelToSentence(string description) => CamelToSentenceRegex()
+        .Replace(description, m => m.Groups[1].Success ? " " + m.Groups[1].Value : "").Trim();
+
+    /// <summary>
+    /// Regular expression to match camel case patterns.
+    /// </summary>
+    [GeneratedRegex("(?<!^)([A-Z])|_")]
+    private static partial Regex CamelToSentenceRegex();
 }

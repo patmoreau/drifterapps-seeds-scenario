@@ -1,12 +1,10 @@
+using System.Runtime.CompilerServices;
+
 namespace DrifterApps.Seeds.Scenario;
 
 internal sealed partial class ScenarioRunner
 {
-    /// <summary>
-    ///     Adds a step to the scenario with the given action.
-    /// </summary>
-    /// <param name="step">The action to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner Given(Action<IStepRunner> step)
     {
         ArgumentNullException.ThrowIfNull(step);
@@ -18,130 +16,67 @@ internal sealed partial class ScenarioRunner
         return this;
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the given description and action.
-    /// </summary>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The action to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
-    public IScenarioRunner Given(string description, Action step)
-    {
-        AddStep(nameof(Given), description, async _ =>
-        {
-            await Task.Run(step).ConfigureAwait(false);
-            return null;
-        });
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner Given(string description, Action step) =>
+        AddStep(StepDefinition.Create(nameof(Given), description, step));
 
-    /// <summary>
-    ///     Adds a step to the scenario with the given description and asynchronous function.
-    /// </summary>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous function to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
-    public IScenarioRunner Given(string description, Func<Task> step)
-    {
-        AddStep(nameof(Given), description, async _ =>
-        {
-            await step().ConfigureAwait(false);
-            return null;
-        });
+    /// <inheritdoc/>
+    public IScenarioRunner Given(string description, Func<Task> step) =>
+        AddStep(StepDefinition.Create(nameof(Given), description, step));
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T>(string description, Action<Ensure<T>> step) =>
+        AddStep(StepDefinition.Create(nameof(Given), description, step));
 
-    /// <summary>
-    ///     Adds a step to the scenario with the given description and action with a parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the parameter.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The action to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
-    public IScenarioRunner Given<T>(string description, Action<Ensure<T>> step)
-    {
-        AddStep(nameof(Given), description, async input =>
-        {
-            await Task.Run(() => step(Ensure<T>.From(input))).ConfigureAwait(false);
-            return null;
-        });
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T>(string description, Func<T> step) =>
+        AddStep(StepDefinition.Create(nameof(Given), description, step));
 
-    /// <summary>
-    ///     Adds a step to the scenario with the given description and function.
-    /// </summary>
-    /// <typeparam name="T">The type of the return value of the function.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The function to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
-    public IScenarioRunner Given<T>(string description, Func<T> step)
-    {
-        AddStep(nameof(Given), description, async _ => await Task.Run(step).ConfigureAwait(false));
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T>(string description, Func<Task<T>> step) =>
+        AddStep(StepDefinition.Create(nameof(Given), description, step));
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T>(string description, Func<Ensure<T>, Task> step) =>
+        AddStep(StepDefinition.Create(nameof(Given), description, step));
 
-    /// <summary>
-    ///     Adds a step to the scenario with the given description and asynchronous function.
-    /// </summary>
-    /// <typeparam name="T">The type of the return value of the function.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous function to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
-    public IScenarioRunner Given<T>(string description, Func<Task<T>> step)
-    {
-        AddStep(nameof(Given), description, async _ => await step().ConfigureAwait(false));
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T, T2>(string description, Func<Ensure<T>, T2> step) =>
+        AddStep(StepDefinition.Create(nameof(Given), description, step));
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T, T2>(string description, Func<Ensure<T>, Task<T2>> step) =>
+        AddStep(StepDefinition.Create(nameof(Given), description, step));
 
-    /// <summary>
-    ///     Adds a step to the scenario with the given description and asynchronous function with a parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the parameter.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous function to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
-    public IScenarioRunner Given<T>(string description, Func<Ensure<T>, Task> step)
-    {
-        AddStep(nameof(Given), description, async input =>
-        {
-            await step(Ensure<T>.From(input)).ConfigureAwait(false);
-            return null;
-        });
+    /// <inheritdoc/>
+    public IScenarioRunner Given(Action step, [CallerMemberName] string description = "") =>
+        Given(CamelToSentence(description), step);
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner Given(Func<Task> step, [CallerMemberName] string description = "") =>
+        Given(CamelToSentence(description), step);
 
-    /// <summary>
-    ///     Adds a step to the scenario with the given description and function with a parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the parameter.</typeparam>
-    /// <typeparam name="T2">The type of the return value of the function.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The function to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
-    public IScenarioRunner Given<T, T2>(string description, Func<Ensure<T>, T2> step)
-    {
-        AddStep(nameof(Given), description,
-            async input => await Task.Run(() => step(Ensure<T>.From(input))).ConfigureAwait(false));
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T>(Action<Ensure<T>> step, [CallerMemberName] string description = "") =>
+        Given(CamelToSentence(description), step);
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T>(Func<T> step, [CallerMemberName] string description = "") =>
+        Given(CamelToSentence(description), step);
 
-    /// <summary>
-    ///     Adds a step to the scenario with the given description and asynchronous function with a parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the parameter.</typeparam>
-    /// <typeparam name="T2">The type of the return value of the function.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous function to be executed as a step.</param>
-    /// <returns>The current instance of <see cref="IScenarioRunner" />.</returns>
-    public IScenarioRunner Given<T, T2>(string description, Func<Ensure<T>, Task<T2>> step)
-    {
-        AddStep(nameof(Given), description, async input => await step(Ensure<T>.From(input)).ConfigureAwait(false));
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T>(Func<Task<T>> step, [CallerMemberName] string description = "") =>
+        Given(CamelToSentence(description), step);
 
-        return this;
-    }
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T>(Func<Ensure<T>, Task> step, [CallerMemberName] string description = "") =>
+        Given(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T, T2>(Func<Ensure<T>, T2> step, [CallerMemberName] string description = "") =>
+        Given(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner Given<T, T2>(Func<Ensure<T>, Task<T2>> step, [CallerMemberName] string description = "") =>
+        Given(CamelToSentence(description), step);
 }

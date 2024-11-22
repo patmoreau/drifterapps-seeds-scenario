@@ -19,10 +19,12 @@
       <Compile Update="ScenarioRunner.When.cs">
         <DependentUpon>ScenarioRunner.cs</DependentUpon>
       </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="xunit" />
+      <Compile Update="ScenarioRunner.StepRunner.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.RunnerContext.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

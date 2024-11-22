@@ -85,10 +85,10 @@ public class EnsureAssertions<TValue>(Ensure<TValue> instance)
     public new AndConstraint<EnsureAssertions<TValue>> BeNull(string because = "", params object[] becauseArgs)
     {
         _ = Execute.Assertion
-            .ForCondition(Subject.Value is null)
+            .ForCondition(Subject is {IsNullable: true, IsValid: true, Value: null})
             .BecauseOf(because, becauseArgs)
             .WithDefaultIdentifier(Identifier)
-            .FailWith("Expected {context} to be <null>{reason}, but found {0}.");
+            .FailWith("Expected {context} to be <null>{reason}, but found {0}.", Subject.Value);
 
         return new AndConstraint<EnsureAssertions<TValue>>(this);
     }
@@ -105,7 +105,7 @@ public class EnsureAssertions<TValue>(Ensure<TValue> instance)
     public new AndConstraint<EnsureAssertions<TValue>> NotBeNull(string because = "", params object[] becauseArgs)
     {
         _ = Execute.Assertion
-            .ForCondition(Subject.Value is not null)
+            .ForCondition(Subject is {IsValid: true, Value: not null})
             .BecauseOf(because, becauseArgs)
             .WithDefaultIdentifier(Identifier)
             .FailWith("Expected {context} not to be <null>{reason}.");
@@ -123,11 +123,11 @@ public class EnsureAssertions<TValue>(Ensure<TValue> instance)
     ///     <see cref="EnsureAssertions{TValue}" />
     /// </returns>
     [CustomAssertion]
-    public AndConstraint<EnsureAssertions<TValue>> WithValue(TValue expectedValue,
+    public AndConstraint<EnsureAssertions<TValue>> HaveValue(TValue expectedValue,
         string because = "", params object[] becauseArgs)
     {
         _ = Execute.Assertion
-            .ForCondition(Subject.Value!.Equals(expectedValue))
+            .ForCondition(Subject.IsValid && Subject.Value!.Equals(expectedValue))
             .BecauseOf(because, becauseArgs)
             .WithDefaultIdentifier(Identifier)
             .FailWith("Expected {context} to have value {0}{reason}, but found {1}.", expectedValue, Subject.Value);

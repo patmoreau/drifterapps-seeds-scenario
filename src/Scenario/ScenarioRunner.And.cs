@@ -1,19 +1,17 @@
+using System.Runtime.CompilerServices;
+
 namespace DrifterApps.Seeds.Scenario;
 
 internal sealed partial class ScenarioRunner
 {
-    /// <summary>
-    ///     Adds a step to the scenario with the specified action.
-    /// </summary>
-    /// <param name="step">The action to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And(Action<IStepRunner> step)
     {
         ArgumentNullException.ThrowIfNull(step);
 
         var previousCommand = _steps.LastOrDefault();
 
-        return previousCommand.Command switch
+        return previousCommand?.Command switch
         {
             nameof(Given) => Given(step),
             nameof(When) => When(step),
@@ -22,17 +20,12 @@ internal sealed partial class ScenarioRunner
         };
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the specified description and action.
-    /// </summary>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The action to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And(string description, Action step)
     {
         var previousCommand = _steps.LastOrDefault();
 
-        return string.IsNullOrWhiteSpace(previousCommand.Command)
+        return string.IsNullOrWhiteSpace(previousCommand?.Command)
             ? Given(description, step)
             : previousCommand.Command switch
             {
@@ -43,17 +36,12 @@ internal sealed partial class ScenarioRunner
             };
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the specified description and asynchronous function.
-    /// </summary>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous function to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And(string description, Func<Task> step)
     {
         var previousCommand = _steps.LastOrDefault();
 
-        return previousCommand.Command switch
+        return previousCommand?.Command switch
         {
             nameof(Given) => Given(description, step),
             nameof(When) => When(description, step),
@@ -62,18 +50,12 @@ internal sealed partial class ScenarioRunner
         };
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the specified description and action with a parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the parameter.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The action to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And<T>(string description, Action<Ensure<T>> step)
     {
         var previousCommand = _steps.LastOrDefault();
 
-        return string.IsNullOrWhiteSpace(previousCommand.Command)
+        return string.IsNullOrWhiteSpace(previousCommand?.Command)
             ? Given(description, step)
             : previousCommand.Command switch
             {
@@ -84,18 +66,12 @@ internal sealed partial class ScenarioRunner
             };
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the specified description and function.
-    /// </summary>
-    /// <typeparam name="T">The return type of the function.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The function to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And<T>(string description, Func<T> step)
     {
         var previousCommand = _steps.LastOrDefault();
 
-        return previousCommand.Command switch
+        return previousCommand?.Command switch
         {
             nameof(Given) => Given(description, step),
             nameof(When) => When(description, step),
@@ -104,18 +80,12 @@ internal sealed partial class ScenarioRunner
         };
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the specified description and asynchronous function with a return type.
-    /// </summary>
-    /// <typeparam name="T">The return type of the function.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous function to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And<T>(string description, Func<Task<T>> step)
     {
         var previousCommand = _steps.LastOrDefault();
 
-        return previousCommand.Command switch
+        return previousCommand?.Command switch
         {
             nameof(Given) => Given(description, step),
             nameof(When) => When(description, step),
@@ -124,19 +94,12 @@ internal sealed partial class ScenarioRunner
         };
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the specified description and function with two parameters.
-    /// </summary>
-    /// <typeparam name="T">The type of the first parameter.</typeparam>
-    /// <typeparam name="T2">The type of the second parameter.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The function to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And<T, T2>(string description, Func<Ensure<T>, T2> step)
     {
         var previousCommand = _steps.LastOrDefault();
 
-        return previousCommand.Command switch
+        return previousCommand?.Command switch
         {
             nameof(Given) => Given(description, step),
             nameof(When) => When(description, step),
@@ -145,19 +108,12 @@ internal sealed partial class ScenarioRunner
         };
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the specified description and asynchronous function with two parameters.
-    /// </summary>
-    /// <typeparam name="T">The type of the first parameter.</typeparam>
-    /// <typeparam name="T2">The return type of the function.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous function to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And<T, T2>(string description, Func<Ensure<T>, Task<T2>> step)
     {
         var previousCommand = _steps.LastOrDefault();
 
-        return previousCommand.Command switch
+        return previousCommand?.Command switch
         {
             nameof(Given) => Given(description, step),
             nameof(When) => When(description, step),
@@ -166,18 +122,12 @@ internal sealed partial class ScenarioRunner
         };
     }
 
-    /// <summary>
-    ///     Adds a step to the scenario with the specified description and asynchronous function with a parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the parameter.</typeparam>
-    /// <param name="description">The description of the step.</param>
-    /// <param name="step">The asynchronous function to be executed as a step.</param>
-    /// <returns>The scenario runner instance.</returns>
+    /// <inheritdoc/>
     public IScenarioRunner And<T>(string description, Func<Ensure<T>, Task> step)
     {
         var previousCommand = _steps.LastOrDefault();
 
-        return previousCommand.Command switch
+        return previousCommand?.Command switch
         {
             nameof(Given) => Given(description, step),
             nameof(When) => When(description, step),
@@ -185,4 +135,36 @@ internal sealed partial class ScenarioRunner
             _ => Given(description, step)
         };
     }
+
+    /// <inheritdoc/>
+    public IScenarioRunner And(Action step, [CallerMemberName] string description = "")
+        => And(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner And(Func<Task> step, [CallerMemberName] string description = "")
+        => And(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner And<T>(Action<Ensure<T>> step, [CallerMemberName] string description = "")
+        => And(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner And<T>(Func<T> step, [CallerMemberName] string description = "")
+        => And(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner And<T>(Func<Task<T>> step, [CallerMemberName] string description = "")
+        => And(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner And<T>(Func<Ensure<T>, Task> step, [CallerMemberName] string description = "")
+        => And(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner And<T, T2>(Func<Ensure<T>, T2> step, [CallerMemberName] string description = "")
+        => And(CamelToSentence(description), step);
+
+    /// <inheritdoc/>
+    public IScenarioRunner And<T, T2>(Func<Ensure<T>, Task<T2>> step, [CallerMemberName] string description = "")
+        => And(CamelToSentence(description), step);
 }
