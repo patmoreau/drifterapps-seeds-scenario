@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace DrifterApps.Seeds.FluentScenario;
 
-internal sealed partial class ScenarioRunner
+public sealed partial class ScenarioRunner
 {
     /// <inheritdoc/>
     public IStepRunner Execute(string description, Action stepExecution)
