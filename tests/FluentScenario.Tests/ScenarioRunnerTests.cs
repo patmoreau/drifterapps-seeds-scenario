@@ -1,9 +1,45 @@
+using FluentScenario.Tests.Extensions;
+using FluentScenario.Tests.Mocks;
+
 namespace FluentScenario.Tests;
 
 [UnitTest]
 public class ScenarioRunnerTests
 {
     private readonly IScenarioOutput _scenarioOutput = Substitute.For<IScenarioOutput>();
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void GivenDescription_WhenNull_ThenThrowArgumentNullException(string? description)
+    {
+        // arrange
+
+        // act
+        Action act = () => ScenarioRunner.Create(description!, _scenarioOutput);
+
+        // assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("Please explain your intent by documenting your scenario.*");
+    }
+
+    [Fact]
+    public async Task GivenScenario_WhenExceptionThrown_ThenOutputFailure()
+    {
+        // arrange
+        var sut = ScenarioRunner.Create(_scenarioOutput)
+            .Given("Test failure", () => throw new InvalidOperationException("Test exception"));
+
+        // act
+        var action = sut.PlayAsync;
+
+        // assert
+        await action.Should().ThrowAsync<InvalidOperationException>().WithMessage("Test exception");
+        _scenarioOutput.Received().WriteLine(
+            Arg.Is<string>(x => x.Contains($"{ScenarioRunner.FailCheck} GIVEN Test failure")));
+    }
+
     [Fact]
     public async Task GivenScenario_WhenNoDescription_ThenScenarioIsMemberName()
     {
@@ -22,7 +58,7 @@ public class ScenarioRunnerTests
     public async Task GivenAction_WhenRunAsync_ThenShouldRunSteps()
     {
         // arrange
-        int count = 0;
+        var count = 0;
         var sut = ScenarioRunner.Create("Testing Action Scenario", _scenarioOutput)
             .Given("Task 1: Given Action", () => { ++count; })
             .And("Task 2: And Action", () => { ++count; })
@@ -40,7 +76,7 @@ public class ScenarioRunnerTests
     public async Task GivenActionWithNoDescription_WhenRunAsync_ThenShouldRunSteps()
     {
         // arrange
-        int count = 0;
+        var count = 0;
         var sut = ScenarioRunner.Create(_scenarioOutput)
             .Given(() => { ++count; })
             .And(() => { ++count; })
@@ -316,5 +352,79 @@ public class ScenarioRunnerTests
 
         // assert
         result.Should().BeValid().And.HaveValue(150);
+    }
+    public const string OutputFromExecute = "Executing...";
+
+    [Theory]
+    [ClassData(typeof(AndRunnerData))]
+    public async Task GivenMethod_WhenFirst_ThenShouldBeGiven(string methodName, MockScenarioOutput output,
+        object step)
+    {
+        // arrange
+        var description = "description";
+        output.Reset();
+        var sut = ScenarioRunner.Create("Testing StepRunner Execute", output);
+
+        // act
+        sut.InvokeStep(methodName, description, step);
+        sut.InvokeStep("And", description, step);
+        sut.InvokeStep(methodName, step);
+        sut.InvokeStep("And", step);
+        await sut.PlayAsync();
+
+        // assert
+        var upperMethodName = methodName == "And" ? "GIVEN" : methodName.ToUpper(CultureInfo.InvariantCulture);
+        _ = output.Messages.Should().HaveCount(9).And.ContainInOrder(
+            $"{ScenarioRunner.SuccessCheck} SCENARIO for Testing StepRunner Execute",
+            OutputFromExecute,
+            $"{ScenarioRunner.SuccessCheck} {upperMethodName} {description}",
+            OutputFromExecute,
+            $"{ScenarioRunner.SuccessCheck} and {description}",
+            OutputFromExecute,
+            $"{ScenarioRunner.SuccessCheck} and Caller Member Name Attribute",
+            OutputFromExecute,
+            $"{ScenarioRunner.SuccessCheck} and Caller Member Name Attribute"
+            );
+    }
+
+    internal class AndRunnerData : TheoryData<string, MockScenarioOutput, object>
+    {
+        private readonly MockScenarioOutput _scenarioOutput = new();
+
+        public AndRunnerData()
+        {
+            Add("Given", _scenarioOutput, TestData.ExecuteAction(_scenarioOutput));
+            Add("Given", _scenarioOutput, TestData.ExecuteActionOfT(_scenarioOutput));
+            Add("Given", _scenarioOutput, TestData.ExecuteFuncTask(_scenarioOutput));
+            Add("Given", _scenarioOutput, TestData.ExecuteFuncOfT(_scenarioOutput));
+            Add("Given", _scenarioOutput, TestData.ExecuteFuncTaskOfT(_scenarioOutput));
+            Add("Given", _scenarioOutput, TestData.ExecuteFuncTAndTask(_scenarioOutput));
+            Add("Given", _scenarioOutput, TestData.ExecuteFuncTAndT(_scenarioOutput));
+            Add("Given", _scenarioOutput, TestData.ExecuteFuncTAndTaskOfT(_scenarioOutput));
+            Add("When", _scenarioOutput, TestData.ExecuteAction(_scenarioOutput));
+            Add("When", _scenarioOutput, TestData.ExecuteActionOfT(_scenarioOutput));
+            Add("When", _scenarioOutput, TestData.ExecuteFuncTask(_scenarioOutput));
+            Add("When", _scenarioOutput, TestData.ExecuteFuncOfT(_scenarioOutput));
+            Add("When", _scenarioOutput, TestData.ExecuteFuncTaskOfT(_scenarioOutput));
+            Add("When", _scenarioOutput, TestData.ExecuteFuncTAndTask(_scenarioOutput));
+            Add("When", _scenarioOutput, TestData.ExecuteFuncTAndT(_scenarioOutput));
+            Add("When", _scenarioOutput, TestData.ExecuteFuncTAndTaskOfT(_scenarioOutput));
+            Add("Then", _scenarioOutput, TestData.ExecuteAction(_scenarioOutput));
+            Add("Then", _scenarioOutput, TestData.ExecuteActionOfT(_scenarioOutput));
+            Add("Then", _scenarioOutput, TestData.ExecuteFuncTask(_scenarioOutput));
+            Add("Then", _scenarioOutput, TestData.ExecuteFuncOfT(_scenarioOutput));
+            Add("Then", _scenarioOutput, TestData.ExecuteFuncTaskOfT(_scenarioOutput));
+            Add("Then", _scenarioOutput, TestData.ExecuteFuncTAndTask(_scenarioOutput));
+            Add("Then", _scenarioOutput, TestData.ExecuteFuncTAndT(_scenarioOutput));
+            Add("Then", _scenarioOutput, TestData.ExecuteFuncTAndTaskOfT(_scenarioOutput));
+            Add("And", _scenarioOutput, TestData.ExecuteAction(_scenarioOutput));
+            Add("And", _scenarioOutput, TestData.ExecuteActionOfT(_scenarioOutput));
+            Add("And", _scenarioOutput, TestData.ExecuteFuncTask(_scenarioOutput));
+            Add("And", _scenarioOutput, TestData.ExecuteFuncOfT(_scenarioOutput));
+            Add("And", _scenarioOutput, TestData.ExecuteFuncTaskOfT(_scenarioOutput));
+            Add("And", _scenarioOutput, TestData.ExecuteFuncTAndTask(_scenarioOutput));
+            Add("And", _scenarioOutput, TestData.ExecuteFuncTAndT(_scenarioOutput));
+            Add("And", _scenarioOutput, TestData.ExecuteFuncTAndTaskOfT(_scenarioOutput));
+        }
     }
 }

@@ -10,6 +10,9 @@ namespace DrifterApps.Seeds.FluentScenario;
 [SuppressMessage("Style", "IDE0042:Deconstruct variable declaration")]
 internal sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
 {
+    internal const string SuccessCheck = "\u001b[32m\u2713\u001b[0m";
+    internal const string FailCheck = "\u001b[31m\u2717\u001b[0m";
+
     private readonly Dictionary<string, object> _context = [];
     private readonly List<StepDefinition> _steps = [];
     private readonly IScenarioOutput _scenarioOutput;
@@ -116,11 +119,11 @@ internal sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
             try
             {
                 currentResult = await step.Step(currentResult).ConfigureAwait(false);
-                _scenarioOutput.WriteLine($"\u2713 {step.Description}");
+                _scenarioOutput.WriteLine($"{SuccessCheck} {step.Description}");
             }
             catch (Exception)
             {
-                _scenarioOutput.WriteLine($"\u2717 {step.Description}");
+                _scenarioOutput.WriteLine($"{FailCheck} {step.Description}");
                 throw;
             }
         }

@@ -4,12 +4,6 @@ internal record StepDefinition
 {
     private StepDefinition(string command, string description, Func<object?, Task<object?>> step)
     {
-        if (string.IsNullOrWhiteSpace(description))
-        {
-            throw new ArgumentNullException(nameof(description),
-                "Please explain your intent by documenting your test.");
-        }
-
         Command = command;
         Description = description;
         Step = step;
