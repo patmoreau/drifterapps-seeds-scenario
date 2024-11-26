@@ -12,8 +12,8 @@ public class ScenarioWithWellNamedMethodsTests(ITestOutputHelper testOutputHelpe
     {
         await ScenarioRunner.Create(_scenarioOutput)
             .Given(IWantToGoPlayOutside)
-            .When(TheTemperatureIsBelow0C)
-            .Then(IStayInsideIfTheTemperatureDifferenceIsGreaterThan20C)
+            .When(TheTemperatureIsBelow0c)
+            .Then(IStayInsideIfTheTemperatureDifferenceIsGreaterThan20c)
             .PlayAsync();
     }
 
@@ -25,7 +25,7 @@ public class ScenarioWithWellNamedMethodsTests(ITestOutputHelper testOutputHelpe
         });
     }
 
-    private static void TheTemperatureIsBelow0C(IStepRunner runner)
+    private static void TheTemperatureIsBelow0c(IStepRunner runner)
     {
         runner.Execute(() =>
         {
@@ -33,7 +33,7 @@ public class ScenarioWithWellNamedMethodsTests(ITestOutputHelper testOutputHelpe
         });
     }
 
-    private static void IStayInsideIfTheTemperatureDifferenceIsGreaterThan20C(IStepRunner runner)
+    private static void IStayInsideIfTheTemperatureDifferenceIsGreaterThan20c(IStepRunner runner)
     {
         runner.Execute(() =>
         {

@@ -158,6 +158,6 @@ public sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
     /// <summary>
     /// Regular expression to match camel case patterns.
     /// </summary>
-    [GeneratedRegex("(?<!^)([A-Z])|_")]
+    [GeneratedRegex("(?<!^)([A-Z]|[0-9].*)|_")]
     private static partial Regex CamelToSentenceRegex();
 }
