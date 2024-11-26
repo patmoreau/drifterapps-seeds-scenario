@@ -1,4 +1,4 @@
-# FluentResult
+# Fluent Scenario
 
 FluentScenario is a C# library that provides a fluent BDD scenario testing framework.
 
