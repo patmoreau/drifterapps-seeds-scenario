@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
@@ -7,8 +6,7 @@ namespace DrifterApps.Seeds.FluentScenario;
 /// <summary>
 ///     Represents a runner for executing test scenarios.
 /// </summary>
-[SuppressMessage("Style", "IDE0042:Deconstruct variable declaration")]
-internal sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
+public sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
 {
     internal const string SuccessCheck = "\u001b[32m\u2713\u001b[0m";
     internal const string FailCheck = "\u001b[31m\u2717\u001b[0m";
@@ -160,6 +158,6 @@ internal sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
     /// <summary>
     /// Regular expression to match camel case patterns.
     /// </summary>
-    [GeneratedRegex("(?<!^)([A-Z])|_")]
+    [GeneratedRegex("(?<!^)([A-Z]|[0-9].*)|_")]
     private static partial Regex CamelToSentenceRegex();
 }

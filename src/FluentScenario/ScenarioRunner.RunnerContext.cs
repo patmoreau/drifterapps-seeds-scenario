@@ -1,6 +1,6 @@
 namespace DrifterApps.Seeds.FluentScenario;
 
-internal sealed partial class ScenarioRunner
+public sealed partial class ScenarioRunner
 {
     /// <inheritdoc/>
     public void SetContextData(string contextKey, object data)
