@@ -1,0 +1,6 @@
+# Remove or update the values below according to your project's needs
+
+[*.cs]
+dotnet_diagnostic.CA1515.severity = none
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1707.severity = none

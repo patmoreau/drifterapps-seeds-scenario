@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyName>DrifterApps.Seeds.FluentScenario</AssemblyName>
+        <RootNamespace>DrifterApps.Seeds.FluentScenario</RootNamespace>
+        <Product>DrifterApps.Seeds.FluentScenario</Product>
+        <PackageId>DrifterApps.Seeds.FluentScenario</PackageId>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="ScenarioRunner.And.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.Given.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.Then.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.When.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.StepRunner.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ScenarioRunner.RunnerContext.cs">
+        <DependentUpon>ScenarioRunner.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>
