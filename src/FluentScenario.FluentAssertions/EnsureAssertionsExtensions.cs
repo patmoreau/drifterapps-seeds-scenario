@@ -26,7 +26,7 @@ public static class EnsureAssertionsExtensions
 ///     Provides assertion methods for <see cref="Ensure{TValue}" /> instances.
 /// </summary>
 public class EnsureAssertions<TValue>(Ensure<TValue> instance)
-    : ReferenceTypeAssertions<Ensure<TValue>, EnsureAssertions<TValue>>(instance, AssertionChain.GetOrCreate())
+    : ReferenceTypeAssertions<Ensure<TValue>, EnsureAssertions<TValue>>(instance)
 {
     /// <summary>
     ///     Gets the identifier for the assertion.
@@ -44,7 +44,7 @@ public class EnsureAssertions<TValue>(Ensure<TValue> instance)
     [CustomAssertion]
     public AndConstraint<EnsureAssertions<TValue>> BeValid(string because = "", params object[] becauseArgs)
     {
-        _ = CurrentAssertionChain
+        _ = Execute.Assertion
             .ForCondition(Subject.IsValid)
             .BecauseOf(because, becauseArgs)
             .WithDefaultIdentifier(Identifier)
@@ -64,7 +64,7 @@ public class EnsureAssertions<TValue>(Ensure<TValue> instance)
     [CustomAssertion]
     public AndConstraint<EnsureAssertions<TValue>> BeInvalid(string because = "", params object[] becauseArgs)
     {
-        _ = CurrentAssertionChain
+        _ = Execute.Assertion
             .ForCondition(!Subject.IsValid)
             .BecauseOf(because, becauseArgs)
             .WithDefaultIdentifier(Identifier)
@@ -84,7 +84,7 @@ public class EnsureAssertions<TValue>(Ensure<TValue> instance)
     [CustomAssertion]
     public new AndConstraint<EnsureAssertions<TValue>> BeNull(string because = "", params object[] becauseArgs)
     {
-        _ = CurrentAssertionChain
+        _ = Execute.Assertion
             .ForCondition(Subject is {IsNullable: true, IsValid: true, Value: null})
             .BecauseOf(because, becauseArgs)
             .WithDefaultIdentifier(Identifier)
@@ -104,7 +104,7 @@ public class EnsureAssertions<TValue>(Ensure<TValue> instance)
     [CustomAssertion]
     public new AndConstraint<EnsureAssertions<TValue>> NotBeNull(string because = "", params object[] becauseArgs)
     {
-        _ = CurrentAssertionChain
+        _ = Execute.Assertion
             .ForCondition(Subject is {IsValid: true, Value: not null})
             .BecauseOf(because, becauseArgs)
             .WithDefaultIdentifier(Identifier)
@@ -126,7 +126,7 @@ public class EnsureAssertions<TValue>(Ensure<TValue> instance)
     public AndConstraint<EnsureAssertions<TValue>> HaveValue(TValue expectedValue,
         string because = "", params object[] becauseArgs)
     {
-        _ = CurrentAssertionChain
+        _ = Execute.Assertion
             .ForCondition(Subject.IsValid && Subject.Value!.Equals(expectedValue))
             .BecauseOf(because, becauseArgs)
             .WithDefaultIdentifier(Identifier)
