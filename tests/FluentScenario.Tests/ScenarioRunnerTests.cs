@@ -51,7 +51,7 @@ public class ScenarioRunnerTests
 
         // assert
         _scenarioOutput.Received().WriteLine(
-            Arg.Is<string>(x => x.Contains("Given Scenario When No Description Then Scenario Is Member Name")));
+            Arg.Is<string>(x => x.Contains("given scenario when no description then scenario is member name")));
     }
 
     [Fact]
@@ -357,13 +357,13 @@ public class ScenarioRunnerTests
 
     [Theory]
     [ClassData(typeof(AndRunnerData))]
-    public async Task GivenMethod_WhenFirst_ThenShouldBeGiven(string methodName, MockScenarioOutput output,
+    public async Task OutputTests(string methodName, MockScenarioOutput output,
         object step)
     {
         // arrange
         var description = "description";
         output.Reset();
-        var sut = ScenarioRunner.Create("Testing StepRunner Execute", output);
+        var sut = ScenarioRunner.Create(output);
 
         // act
         sut.InvokeStep(methodName, description, step);
@@ -375,15 +375,15 @@ public class ScenarioRunnerTests
         // assert
         var upperMethodName = methodName == "And" ? "GIVEN" : methodName.ToUpper(CultureInfo.InvariantCulture);
         _ = output.Messages.Should().HaveCount(9).And.ContainInOrder(
-            $"{ScenarioRunner.SuccessCheck} SCENARIO for Testing StepRunner Execute",
+            $"{ScenarioRunner.SuccessCheck} SCENARIO for output tests",
             OutputFromExecute,
             $"{ScenarioRunner.SuccessCheck} {upperMethodName} {description}",
             OutputFromExecute,
             $"{ScenarioRunner.SuccessCheck} and {description}",
             OutputFromExecute,
-            $"{ScenarioRunner.SuccessCheck} and Caller Member Name Attribute",
+            $"{ScenarioRunner.SuccessCheck} and caller member name attribute",
             OutputFromExecute,
-            $"{ScenarioRunner.SuccessCheck} and Caller Member Name Attribute"
+            $"{ScenarioRunner.SuccessCheck} and caller member name attribute"
             );
     }
 

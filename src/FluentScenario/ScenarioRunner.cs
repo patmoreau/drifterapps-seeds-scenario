@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
@@ -153,7 +154,8 @@ public sealed partial class ScenarioRunner : IScenarioRunner, IStepRunner
     /// <param name="description">The camel case string to convert.</param>
     /// <returns>The converted sentence.</returns>
     private static string CamelToSentence(string description) => CamelToSentenceRegex()
-        .Replace(description, m => m.Groups[1].Success ? " " + m.Groups[1].Value : "").Trim();
+        .Replace(description, m => m.Groups[1].Success ? " " + m.Groups[1].Value : "").Trim()
+        .ToLower(CultureInfo.CurrentCulture);
 
     /// <summary>
     /// Regular expression to match camel case patterns.
