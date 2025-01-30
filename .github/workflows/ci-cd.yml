@@ -148,14 +148,14 @@ jobs:
           label: Tests on .NET ${{ matrix.framework }}
           status: '${{ steps.test-results.outputs.passed }} passed, ${{ steps.test-results.outputs.failed }} failed, ${{ steps.test-results.outputs.skipped }} skipped: ${{ steps.test-results.outputs.conclusion }}'
           color: ${{ env.BADGE_COLOR }}
-          path: seeds-fluent-result-tests-badge-${{ matrix.framework }}.svg
+          path: seeds-fluentscenario-tests-badge-${{ matrix.framework }}.svg
 
       - name: Upload badge to artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Test Badge .NET ${{ matrix.framework }}
-          path: seeds-fluent-result-tests-badge-${{ matrix.framework }}.svg
+          path: seeds-fluentscenario-tests-badge-${{ matrix.framework }}.svg
 
       - name: Upload badge to Gist
         if: >
@@ -166,17 +166,6 @@ jobs:
           token: ${{ secrets.GIST_TOKEN }}
           gist_id: 51a2fc9fd8b7ed500ed3b6aabe0fc2d6
           file_path: seeds-fluentscenario-tests-badge-${{ matrix.framework }}.svg
-          file_type: text
-
-      - name: Upload badge to Gist
-        if: >
-          (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main') ||
-          (github.event_name != 'workflow_run' && github.ref == 'refs/heads/main')
-        uses: exuanbo/actions-deploy-gist@v1
-        with:
-          token: ${{ secrets.GIST_TOKEN }}
-          gist_id: 51a2fc9fd8b7ed500ed3b6aabe0fc2d6
-          file_path: seeds-fluentscenario-tests-badge.svg
           file_type: text
 
   tagging:
