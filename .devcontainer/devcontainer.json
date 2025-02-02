@@ -26,9 +26,10 @@
       "installOhMyZsh": true,
       "upgradePackages": true
     },
-    "ghcr.io/devcontainers/features/dotnet:1": {
-      "version": "9.0",
-      "runtimeOnly": false
+    "ghcr.io/devcontainers/features/dotnet:2": {
+      "version": "latest",
+      "runtimeOnly": false,
+      "additionalVersions": "latest, lts"
     }
   },
   "workspaceFolder": "/workspace",

@@ -5,12 +5,6 @@ USER root
 # RUN curl -s "https://download.jetbrains.com/rider/rider-2024.3.4.tar.gz" | tar -xzf - -C /opt && \
 #     ln -s /opt/rider-*/bin/rider.sh /usr/local/bin/rider
 
-# Install .NET 8 SDK
-RUN apt-get update && apt-get install -y dotnet-sdk-8.0
-
-# Clean up
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # [Optional] Install the .NET MAUI workload if needed
 # RUN dotnet workload install maui
 
