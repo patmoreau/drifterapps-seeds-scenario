@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0
 
 # Install JetBrains Rider (latest version)
 USER root
-RUN curl -s "https://download.jetbrains.com/rider/rider-2023.4.3.tar.gz" | tar -xzf - -C /opt && \
+RUN curl -s "https://download.jetbrains.com/rider/rider-2024.3.4.tar.gz" | tar -xzf - -C /opt && \
     ln -s /opt/rider-*/bin/rider.sh /usr/local/bin/rider
 
 # [Optional] Install the .NET MAUI workload if needed
