@@ -1,23 +1,26 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
   "name": "fluentscenario-devcontainer",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-dotnettools.csharp",
-        "ms-dotnettools.csdevkit",
-        "formulahendry.dotnet-test-explorer"
-      ]
-    },
-    "jetbrains": {
-      "extensions": [
-        "JetBrains.rider"
-      ]
-    }
-  },
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/drifterapps-seeds-fluentscenario",
+  "shutdownAction": "none",
   "features": {
+    "ghcr.io/devcontainers/features/dotnet:2": {
+      "version": "latest",
+      "additionalVersions": "lts"
+    },
+    "ghcr.io/devcontainers/features/git-lfs:1": {
+      "autoPull": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    },
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
       "username": "vscode",
@@ -25,15 +28,19 @@
       "gid": "1000",
       "installOhMyZsh": true,
       "upgradePackages": true
-    },
-    "ghcr.io/devcontainers/features/dotnet:2": {
-      "version": "latest",
-      "runtimeOnly": false,
-      "additionalVersions": "latest, lts"
     }
   },
-  "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-  "postCreateCommand": "dotnet tool restore",
-  "remoteUser": "vscode"
+  "postCreateCommand": "dotnet dev-certs https --trust && sudo dotnet workload update && dotnet restore",
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "davidanson.vscode-markdownlint"
+      ]
+    }
+  }
 }

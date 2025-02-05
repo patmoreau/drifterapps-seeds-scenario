@@ -1,0 +1,14 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fluentscenario-devcontainer
+    volumes:
+      - ..:/workspaces/drifterapps-seeds-fluentscenario:cached
+      - ~/.ssh:/home/vscode/.ssh:ro
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    entrypoint: /usr/bin/tail -f /dev/null
