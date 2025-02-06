@@ -6,9 +6,11 @@ services:
     container_name: fluentscenario-devcontainer
     volumes:
       - ..:/workspaces/drifterapps-seeds-fluentscenario:cached
-      - ~/.ssh:/home/vscode/.ssh:ro
+      - ${USER_PROFILE}/.ssh:/home/vscode/.ssh:ro
+      - ${USER_PROFILE}/.gitconfig:/home/vscode/.gitconfig:ro
     cap_add:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
-    entrypoint: /usr/bin/tail -f /dev/null
+    ports:
+      - '2223:22'

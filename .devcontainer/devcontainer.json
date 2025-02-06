@@ -1,10 +1,6 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
   "name": "fluentscenario-devcontainer",
-  "dockerComposeFile": [
-    "docker-compose.yml"
-  ],
+  "dockerComposeFile": ["docker-compose.yml"],
   "service": "devcontainer",
   "workspaceFolder": "/workspaces/drifterapps-seeds-fluentscenario",
   "shutdownAction": "none",
@@ -28,10 +24,10 @@
       "gid": "1000",
       "installOhMyZsh": true,
       "upgradePackages": true
-    }
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-  "postCreateCommand": "dotnet dev-certs https --trust && sudo dotnet workload update && dotnet restore",
-  // Configure tool-specific properties.
+  "postCreateCommand": "/workspaces/drifterapps-seeds-fluentscenario/.devcontainer/setup.sh",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -39,7 +35,8 @@
         "ms-azuretools.vscode-docker",
         "eamodio.gitlens",
         "esbenp.prettier-vscode",
-        "davidanson.vscode-markdownlint"
+        "davidanson.vscode-markdownlint",
+        "ms-vscode-remote.remote-containers"
       ]
     }
   }

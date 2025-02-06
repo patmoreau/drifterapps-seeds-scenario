@@ -1,8 +1,6 @@
-# Fluent Scenario
+# <img alt='paper plane icons' src='./icon.png' height='10%' width='10%'> Fluent Scenario
 
 FluentScenario is a C# library that provides a fluent BDD scenario testing framework.
-
-<img alt='paper plane icons' src='./icon.png' height='10%' width='10%'>
 
 [![Build and Publish NuGet Package](https://github.com/patmoreau/drifterapps-seeds-fluentscenario/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/patmoreau/drifterapps-seeds-fluentscenario/actions/workflows/ci-cd.yml)
 [![CodeQL](https://github.com/patmoreau/drifterapps-seeds-fluentscenario/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/patmoreau/drifterapps-seeds-fluentscenario/actions/workflows/codeql-analysis.yml)
